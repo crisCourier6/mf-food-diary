@@ -7,8 +7,12 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
         mode: "development",
         devServer: {
           port: 4006, // Modificar
-          host: "192.168.100.6",
+          host: "localhost",
+          allowedHosts: 'all',
           historyApiFallback: true, // Necesario para que funcione React Router
+          client: {
+            overlay: false
+          }
         },
         module: {
           rules: [
@@ -61,6 +65,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
             filename: "remoteEntry.js",
             exposes: {
               "./FoodDiary": "./src/components/FoodDiary", // Ejemplo, aqui se exponen los componentes
+              "./FoodDiaryLocal": "./src/components/FoodDiaryLocal"
             },
             shared: {
               ...dependencies,
