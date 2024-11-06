@@ -7,7 +7,7 @@ import FoodDiary from "./components/FoodDiary";
 function App() {
   return (
     <div className="App">
-      <Router>
+      <Router basename="/mf-food-diary">
           <Routes>
               <Route path="/food-diary" element={<FoodDiary />}/>
           </Routes>
