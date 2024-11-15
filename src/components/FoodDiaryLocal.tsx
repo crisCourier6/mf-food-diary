@@ -279,7 +279,7 @@ const FoodDiaryLocal: React.FC = () => {
     useEffect(()=>{
         setSelectedDate(dayjs())
         let queryParams = `?u=${currentUserId}&we=true`
-        api.get(`${diariesURL}${queryParams}`, 
+        api.get(`${diariesURL}/byUser/${currentUserId}`, 
             {
                 withCredentials: true,
                 headers: {
