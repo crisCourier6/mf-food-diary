@@ -23,6 +23,7 @@
     "dayjs": "^1.11.13",
     "dayjs-plugin-utc": "^0.1.2",
     "disqus-react": "^1.1.5",
+    "dotenv": "^16.4.5",
     "file-loader": "^6.2.0",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.3",

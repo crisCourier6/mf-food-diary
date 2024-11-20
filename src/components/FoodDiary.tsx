@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Button, Box, TextField, Paper, Typography, Grid, CircularProgress, 
@@ -7,11 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import api from "../api";
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
-import { useState } from 'react';
 import { DateCalendar} from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
-import 'react-calendar/dist/Calendar.css'; // Import the calendar styles
+import 'react-calendar/dist/Calendar.css'; 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import 'dayjs/locale/es';
 import { TimePicker } from "@mui/x-date-pickers";
@@ -22,12 +21,6 @@ interface Task {
     due: string;
     title: string;
     notes?: string[];
-}
-
-interface TaskList {
-    id: string;
-    title: string;
-    tasks: Task[];
 }
 
 function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
@@ -249,17 +242,15 @@ function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
   };
 
 const FoodDiary: React.FC = () => {
-    const navigate = useNavigate()
     const [taskLists, setTaskLists] = useState<any>([])
     const [googleUser, setGoogleUser] = useState(true)
     const [selectedTaskList, setSelectedTaskList] = useState<string>("");
-    const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
+    // const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
     const [tasks, setTasks] = useState<any>(null)
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
     const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
     const [isEditTaskOpen, setIsEditTaskOpen] = useState(false)
     const [filteredTasks, setFilteredTasks] = useState<any>([]);
-    const [error, setError] = useState<string | null>(null);
     const [loadingTaskLists, setLoadingTaskLists] = useState(true);
     const [loadingTasks, setLoadingTasks] = useState(false);
     const [newTaskListTitle, setNewTaskListTitle] = useState<string>('')
@@ -321,7 +312,7 @@ const FoodDiary: React.FC = () => {
                 due: task.due ? dayjs(task.due).add(1, "day") : null
             }));
             setTasks(tasksWithDates.reverse());
-            setHighlightedDays(getHighlightedDays(tasksWithDates, selectedDate));
+            // setHighlightedDays(getHighlightedDays(tasksWithDates, selectedDate));
             setSelectedTaskList(id)
             setLoadingTasks(false);
     })

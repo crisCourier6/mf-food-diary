@@ -1,13 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Button, Box, TextField, Paper, Typography, Grid, Badge, Dialog, DialogTitle, DialogContent, 
     DialogActions, IconButton, Card, CardContent, CardActions, Tabs, Tab} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import api from "../api";
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
-import { useState } from 'react';
 import { DateCalendar} from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
@@ -252,22 +250,18 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
   };
 
 const FoodDiaryLocal: React.FC = () => {
-    const navigate = useNavigate()
     const currentUserId = window.localStorage.id
     const [selectedTab, setSelectedTab] = useState(0); // 0 for Diaries, 1 for Entries
     const [diaries, setDiaries] = useState<Diary[]>([])
-    const [googleUser, setGoogleUser] = useState(false)
     const [selectedDiary, setSelectedDiary] = useState<Diary|null>(null);
     const [diaryToEdit, setDiaryToEdit] = useState<Diary | null>(null)
-    const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
+    // const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
     const [entries, setEntries] = useState<Entry[]>([])
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
     const [isAddEntryOpen, setIsAddEntryOpen] = useState(false);
     const [isEditEntryOpen, setIsEditEntryOpen] = useState(false)
     const [filteredEntries, setFilteredEntries] = useState<Entry[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [loadingDiaries, setLoadingDiaries] = useState(true);
-    const [loadingEntries, setLoadingEntries] = useState(false);
+    // const [loadingDiaries, setLoadingDiaries] = useState(true);
     const [newDiaryTitle, setNewDiaryTitle] = useState<string>('')
     const [newDiaryDescription, setNewDiaryDescription] = useState<string>('')
     const [openNewDiarydialog, setOpenNewDiaryDialog] = useState(false)
@@ -278,7 +272,7 @@ const FoodDiaryLocal: React.FC = () => {
 
     useEffect(()=>{
         setSelectedDate(dayjs())
-        let queryParams = `?u=${currentUserId}&we=true`
+        // let queryParams = `?u=${currentUserId}&we=true`
         api.get(`${diariesURL}/byUser/${currentUserId}`, 
             {
                 withCredentials: true,
@@ -293,9 +287,9 @@ const FoodDiaryLocal: React.FC = () => {
         .catch(error=>{
             console.log(error)
         })
-        .finally(()=>{
-            setLoadingDiaries(false)
-        })
+        // .finally(()=>{
+        //     setLoadingDiaries(false)
+        // })
     },[])
 
     useEffect(()=>{
@@ -322,7 +316,7 @@ const FoodDiaryLocal: React.FC = () => {
         console.log("diario: ", diary)
         setSelectedDiary(diary)
         setEntries(diary.diaryEntry)
-        setHighlightedDays(getHighlightedDays(diary.diaryEntry, selectedDate)); 
+        // setHighlightedDays(getHighlightedDays(diary.diaryEntry, selectedDate)); 
         setSelectedTab(1);
     }
 
