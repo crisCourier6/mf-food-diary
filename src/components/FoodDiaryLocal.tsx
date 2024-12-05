@@ -72,6 +72,8 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
     const [entryTitle, setEntryTitle] = useState('');
     const [entryNotes, setEntryNotes] = useState('');
     const [selectedTime, setSelectedTime] = useState<Dayjs|null>(dayjs());
+    const token = window.sessionStorage.getItem("token") || window.localStorage.getItem("token")
+    const currentUserId = window.sessionStorage.getItem("id") || window.localStorage.getItem("id")
     const entriesURL = `/food-diary/byid/${diaryId}/entries`
   
     const handleAddEntry = () => {
@@ -96,7 +98,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
         newEntry,
         {
           headers: {
-            Authorization: `Bearer ${window.localStorage.token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       )
@@ -161,6 +163,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
     const [entryNotes, setEntryNotes] = useState(entry.content);
     const [selectedTime, setSelectedTime] = useState<Dayjs|null>(dayjs());
     const entriesURL = `/food-diary/byid/${diaryId}/entries/${entry.id}`
+    const token = window.sessionStorage.getItem("token") || window.localStorage.getItem("token")
   
     const handleEditEntry = () => {
         if (!entryTitle) return; // Prevent creating empty entries
@@ -187,7 +190,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
             newEntry,
             {
             headers: {
-                Authorization: `Bearer ${window.localStorage.token}`,
+                Authorization: `Bearer ${token}`,
             },
             }
         )
@@ -250,7 +253,8 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
   };
 
 const FoodDiaryLocal: React.FC = () => {
-    const currentUserId = window.localStorage.id
+    const token = window.sessionStorage.getItem("token") || window.localStorage.getItem("token")
+    const currentUserId = window.sessionStorage.getItem("id") || window.localStorage.getItem("id")
     const [selectedTab, setSelectedTab] = useState(0); // 0 for Diaries, 1 for Entries
     const [diaries, setDiaries] = useState<Diary[]>([])
     const [selectedDiary, setSelectedDiary] = useState<Diary|null>(null);
@@ -260,6 +264,7 @@ const FoodDiaryLocal: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
     const [isAddEntryOpen, setIsAddEntryOpen] = useState(false);
     const [isEditEntryOpen, setIsEditEntryOpen] = useState(false)
+    const [isDeleteEntryOpen, setIsDeleteEntryOpen] = useState(false)
     const [filteredEntries, setFilteredEntries] = useState<Entry[]>([]);
     // const [loadingDiaries, setLoadingDiaries] = useState(true);
     const [newDiaryTitle, setNewDiaryTitle] = useState<string>('')
@@ -277,7 +282,7 @@ const FoodDiaryLocal: React.FC = () => {
             {
                 withCredentials: true,
                 headers: {
-                    Authorization: "Bearer " + window.localStorage.token
+                    Authorization: "Bearer " + token
                 }
             }
         )
@@ -329,7 +334,7 @@ const FoodDiaryLocal: React.FC = () => {
         api.post(diariesURL, newDiary,
             {
                 headers: {
-                  Authorization: `Bearer ${window.localStorage.token}`,
+                  Authorization: `Bearer ${token}`,
                 },
             }
         )
@@ -352,7 +357,7 @@ const FoodDiaryLocal: React.FC = () => {
         api.patch(`${diariesURL}/byid/${diaryToEdit?.id}`, newDiary,
             {
                 headers: {
-                  Authorization: `Bearer ${window.localStorage.token}`,
+                  Authorization: `Bearer ${token}`,
                 },
             }
         )
@@ -375,7 +380,7 @@ const FoodDiaryLocal: React.FC = () => {
         api.delete(`${diariesURL}/byid/${diaryToEdit?.id}`,
             {
                 headers: {
-                  Authorization: `Bearer ${window.localStorage.token}`,
+                  Authorization: `Bearer ${token}`,
                 },
             }
         )
@@ -391,6 +396,29 @@ const FoodDiaryLocal: React.FC = () => {
         })
         .finally(()=>{
             closeDeleteDiary()
+        })
+    }
+
+    const handleDeleteEntry = () => {
+        api.delete(`${diariesURL}/byid/${diaryToEdit?.id}/entries/${entryToEdit?.id}`,
+            {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+            }
+        )
+        .then(res => {
+            setEntries((prevEntrys) => 
+                prevEntrys.filter((t) => 
+                    t.id !== entryToEdit?.id 
+                )
+            )
+        })
+        .catch(error => {
+            console.log(error)
+        })
+        .finally(()=>{
+            closeDeleteEntryDialog()
         })
     }
 
@@ -466,7 +494,7 @@ const FoodDiaryLocal: React.FC = () => {
       // Call this function when needed
       const handleDownloadPDF = () => {
         if (selectedDiary){
-            const userName = localStorage.getItem('name');
+            const userName = sessionStorage.getItem('name') || localStorage.getItem('name');
             generatePDF(selectedDiary?.title, entries, userName || 'Desconocido');
         }
         
@@ -518,9 +546,18 @@ const FoodDiaryLocal: React.FC = () => {
         setEntryToEdit(entry); 
         setIsEditEntryOpen(true);
     };
+
+    const openDeleteEntryDialog = (entry:Entry) => {
+        setEntryToEdit(entry); 
+        setIsDeleteEntryOpen(true);
+    };
     
     const closeEditEntryDialog = () => {
         setIsEditEntryOpen(false);
+    };
+
+    const closeDeleteEntryDialog = () => {
+        setIsDeleteEntryOpen(false);
     };
 
     const handleMonthChange = (date: Dayjs) => {
@@ -790,30 +827,33 @@ const FoodDiaryLocal: React.FC = () => {
                         <Box key={entry.id} sx={{ border: "5px solid", borderColor: "primary.main", width: "90%", my:1 }}>
                             <Paper elevation={0} square={true} sx={{ bgcolor: "primary.main", color: "primary.contrastText", justifyContent: "space-between", alignItems: "center", display: "flex", px: 1, pb: "5px" }}>
                                 <Typography variant='h6' color="primary.contrastText">{entry.title}</Typography>
-                                
-                                <Button
-                                    variant="contained"
-                                    onClick={() => openEditEntryDialog(entry)}
-                                    sx={{
-                                        padding:0.2, 
-                                        color: "warning.main", 
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        height: "100%"
-                                    }}
-                                >
-                                    <EditNoteRoundedIcon sx={{color: 'warning.main', height: "28px", width: "28px" }}/>
-                                    <Typography 
-                                    variant='subtitle1' 
-                                    color="warning.main" 
-                                    fontSize={12}
-                                    textAlign={"justify"}
-                                    sx={{textDecoration: "underline"}}>
-                                        Editar
-                                    </Typography>
-                                </Button>
-
+                                <Box sx={{display: "flex", flexDirection: "row", gap:1}}>
+                                    <IconButton
+                                        onClick={() => openEditEntryDialog(entry)}
+                                        sx={{
+                                            padding:0.2, 
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            justifyContent: "space-between",
+                                            height: "100%"
+                                        }}
+                                    >
+                                        <EditIcon sx={{color: 'primary.contrastText', height: "24px", width: "24px" }}/>
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={() => openDeleteEntryDialog(entry)}
+                                        sx={{
+                                            padding:0.2, 
+                                            color: "warning.main", 
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            justifyContent: "space-between",
+                                            height: "100%"
+                                        }}
+                                    >
+                                        <DeleteForeverRoundedIcon sx={{color: 'error.main', height: "24px", width: "24px" }}/>
+                                    </IconButton>
+                                </Box>
                                 {/* Add Entry Dialog */}
                                 {isEditEntryOpen && selectedDate && entryToEdit && (
                                     <EditEntryForm setEntries={setEntries} diaryId={selectedDiary?.id} selectedDate={selectedDate} onClose={closeEditEntryDialog} entry = {entryToEdit}/>
@@ -833,6 +873,18 @@ const FoodDiaryLocal: React.FC = () => {
                 ) : (
                     <Typography variant="subtitle2">No hay registros en la fecha seleccionada</Typography>
                 )}
+                <Dialog open={isDeleteEntryOpen} onClose={closeDeleteEntryDialog}>
+                    <DialogTitle>Eliminar registro: {entryToEdit?.title}</DialogTitle>
+                    <DialogContent>
+                        <Typography>
+                            ¿Seguro que desea eliminar el registro {entryToEdit?.title}?
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                    <Button onClick={closeDeleteEntryDialog} color="secondary">Cancelar</Button>
+                    <Button onClick={handleDeleteEntry} color="primary" variant="contained">Aceptar</Button>
+                    </DialogActions>
+                </Dialog>
                 </Box>
                 <Button onClick={openAddEntryDialog}
                 variant="dark" 
