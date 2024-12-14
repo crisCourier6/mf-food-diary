@@ -24,7 +24,7 @@ interface Task {
 }
 
 function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
-    console.log(currentMonth?.month())
+    // console.log(currentMonth?.month())
     if (currentMonth){
         return tasks
         .filter(task => dayjs(task.due).month() === currentMonth.month())
@@ -88,7 +88,7 @@ function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
         }
       )
         .then((response) => {
-          console.log('Task created:', response.data);
+          //console.log('Task created:', response.data);
           // Update local tasks state
             setTasks((prevTasks) => [...(prevTasks || []), 
             { ...response.data, 
@@ -154,7 +154,7 @@ function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
     const handleEditTask = () => {
         if (!taskTitle) return; // Prevent creating empty tasks
         if (taskTitle === task.title.split(" -")[0] && taskNotes === task.notes.join("\n")){
-            console.log(taskTitle, task.title.split(" -")[0])
+            //console.log(taskTitle, task.title.split(" -")[0])
             return
         } 
         const taskDueDateTime = selectedDate
@@ -170,7 +170,7 @@ function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
             notes: taskNotes,
             due: taskDueDateTime.toISOString(), // Set due date to the selected date
         };
-        console.log(newTask)
+        //console.log(newTask)
         // API call to add task
         api.patch(
             `${entriesURL}/${window.localStorage.g_auth}/${listId}`,
@@ -182,7 +182,7 @@ function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
             }
         )
             .then((response) => {
-            console.log('Task updated:', response.data);
+            //console.log('Task updated:', response.data);
             // Update local tasks state
                 setTasks((prevTasks) => prevTasks.map((t) => 
                     t.id === task.id 
@@ -269,7 +269,7 @@ const FoodDiary: React.FC = () => {
                 }
             })
             .then(response => {
-                console.log(response)
+                //console.log(response)
                 setTaskLists(response.data)
                 setLoadingTaskLists(false); // Stop loading once task lists are fetched
             })
@@ -290,7 +290,7 @@ const FoodDiary: React.FC = () => {
                     const taskDueDate = dayjs(task.due).format("DD/MM/YYYY"); 
                     // Format selected date to yyyy-mm-dd
                     const selectedFormattedDate = dayjs(date).format("DD/MM/YYYY");
-                    console.log(taskDueDate, selectedFormattedDate)
+                    //console.log(taskDueDate, selectedFormattedDate)
                     return taskDueDate === selectedFormattedDate;
                 }
             }
@@ -353,11 +353,11 @@ const FoodDiary: React.FC = () => {
             }
           })
             .then(response => {
-                console.log(response)
+                //console.log(response)
               // Remove the deleted task list from the local state
               setTaskLists((prevLists:any) => prevLists.filter((list:any) => list.id !== listId));
               setTasks(null)
-              console.log('Task list deleted successfully');
+              //console.log('Task list deleted successfully');
             })
             .catch((error) => console.error('Error deleting task list:', error));
         }
@@ -371,7 +371,7 @@ const FoodDiary: React.FC = () => {
                     const taskDueDate = dayjs(task.due).format("DD/MM/YYYY"); 
                     // Format selected date to yyyy-mm-dd
                     const selectedFormattedDate = dayjs(date).format("DD/MM/YYYY");
-                    console.log(taskDueDate, selectedFormattedDate)
+                    //console.log(taskDueDate, selectedFormattedDate)
                     return taskDueDate === selectedFormattedDate;
                 }
                 return false;

@@ -37,7 +37,7 @@ function TabPanel(props:any) {
 }
 
 function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
-    console.log("currentMonth: ", currentMonth?.month())
+    //console.log("currentMonth: ", currentMonth?.month())
     if (currentMonth){
         return entries
         .filter(entry => dayjs(entry.date).month() === currentMonth.month())
@@ -103,7 +103,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
         }
       )
         .then((response) => {
-          console.log('Entry created:', response.data);
+          //console.log('Entry created:', response.data);
           // Update local entries state
             setEntries((prevEntrys) => [...(prevEntrys || []), 
             { ...response.data }]); // Ensure to add entry with new id
@@ -168,7 +168,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
     const handleEditEntry = () => {
         if (!entryTitle) return; // Prevent creating empty entries
         if (entryTitle === entry.title.split(" -")[0] && entryNotes === entry.content){
-            console.log(entryTitle, entry.title.split(" -")[0])
+            //console.log(entryTitle, entry.title.split(" -")[0])
             return
         } 
         const entryDueDateTime = selectedDate
@@ -183,7 +183,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
             content: entryNotes,
             date: entryDueDateTime.toISOString(), // Set date date to the selected date
         };
-        console.log("newEntry: ", newEntry)
+        //console.log("newEntry: ", newEntry)
         // API call to add entry
         api.patch(
             `${entriesURL}`,
@@ -195,7 +195,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
             }
         )
             .then((response) => {
-            console.log('Entry updated:', response.data);
+            //console.log('Entry updated:', response.data);
             // Update local entries state
                 setEntries((prevEntrys) => prevEntrys.map((t) => 
                     t.id === entry.id 
@@ -305,7 +305,7 @@ const FoodDiaryLocal: React.FC = () => {
                     const entryDate = dayjs(entry.date).format("DD/MM/YYYY"); 
                     // Format selected date to yyyy-mm-dd
                     const selectedFormattedDate = dayjs(date).format("DD/MM/YYYY");
-                    console.log("2: ", entryDate, selectedFormattedDate)
+                    //console.log("2: ", entryDate, selectedFormattedDate)
                     return entryDate === selectedFormattedDate;
                 }
             }
@@ -318,7 +318,7 @@ const FoodDiaryLocal: React.FC = () => {
     };
 
     const handleSelectDiary = (diary:Diary) => {
-        console.log("diario: ", diary)
+        //console.log("diario: ", diary)
         setSelectedDiary(diary)
         setEntries(diary.diaryEntry)
         // setHighlightedDays(getHighlightedDays(diary.diaryEntry, selectedDate)); 
@@ -430,7 +430,7 @@ const FoodDiaryLocal: React.FC = () => {
                     const entryDueDate = dayjs(entry.date).format("DD/MM/YYYY"); 
                     // Format selected date to yyyy-mm-dd
                     const selectedFormattedDate = dayjs(date).format("DD/MM/YYYY");
-                    console.log("hola", entryDueDate, selectedFormattedDate)
+                    //console.log("hola", entryDueDate, selectedFormattedDate)
                     return entryDueDate === selectedFormattedDate;
                 }
                 return false;
@@ -686,29 +686,30 @@ const FoodDiaryLocal: React.FC = () => {
                             </Box>
                         </CardActions>
                     </Card> 
-                    <Button onClick={openCreateDiaryDialog}
-                    variant="dark" 
-                    sx={{
-                        display: "flex",
-                        position: 'fixed',
-                        bottom: 0, // 16px from the bottom
-                        zIndex: 100, // High zIndex to ensure it's on top of everything
-                        height: "48px",
-                        width: "100%",
-                        maxWidth: "500px"
-                    }}
-                    >
-                        <AddIcon sx={{fontSize: 40}}></AddIcon>
-                        <Typography variant='subtitle1' color={"inherit"}>
-                            Crear diario alimenticio
-                        </Typography>
-                        
-                    </Button>
+                    
                     
                     
                     </>
                 )
             })}
+            <Button onClick={openCreateDiaryDialog}
+                variant="dark" 
+                sx={{
+                    display: "flex",
+                    position: 'fixed',
+                    bottom: 0, // 16px from the bottom
+                    zIndex: 100, // High zIndex to ensure it's on top of everything
+                    height: "48px",
+                    width: "100%",
+                    maxWidth: "500px"
+                }}
+                >
+                    <AddIcon sx={{fontSize: 40}}></AddIcon>
+                    <Typography variant='subtitle1' color={"inherit"}>
+                        Crear diario alimenticio
+                    </Typography>
+                    
+                </Button>
             <Dialog open={openNewDiarydialog} onClose={closeCreateDiaryDialog}
             PaperProps={{
                 sx: {
