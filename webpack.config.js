@@ -89,6 +89,9 @@ dotenv.config()
             },
           }),
         ],
+        output: {
+          publicPath: process.env.REACT_APP_PUBLIC_PATH || '/', // Necesario para rutas anidadas (/path/nested-path)
+        },
         resolve: {
           extensions: [".tsx", ".ts", ".js", ".jsx"],
         },
