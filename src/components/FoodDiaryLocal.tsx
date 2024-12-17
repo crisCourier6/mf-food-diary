@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Button, Box, TextField, Paper, Typography, Grid, Badge, Dialog, DialogTitle, DialogContent, 
-    DialogActions, IconButton, Card, CardContent, CardActions, Tabs, Tab} from '@mui/material';
+    DialogActions, IconButton, Card, CardContent, CardActions, Tabs, Tab,
+    CircularProgress} from '@mui/material';
 import api from "../api";
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
@@ -114,8 +115,14 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
     };
   
     return (
-      <Dialog open={true} onClose={onClose}>
-        <DialogTitle>Agregar registro en {selectedDate.format('DD/MM/YYYY')}</DialogTitle>
+      <Dialog open={true} onClose={onClose} PaperProps={{
+        sx: {
+            maxHeight: '80vh', 
+            width: "85vw",
+            maxWidth: "450px"
+        }
+    }}>
+        <DialogTitle>Registro en {selectedDate.format('DD/MM/YYYY')}</DialogTitle>
         <DialogContent>
           <Grid container direction="column" gap={2}>
             <TextField
@@ -145,12 +152,14 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
                 onChange={(newTime) => setSelectedTime(newTime)}
                 />
             </LocalizationProvider>
+            <Box sx={{display: "flex", justifyContent: "flex-end"}}>
+                <Button onClick={onClose} color="secondary">Salir</Button>
+                <Button onClick={handleAddEntry} color="primary" variant="contained">Agregar registro</Button>
+            </Box>
+            
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} color="secondary">Salir</Button>
-          <Button onClick={handleAddEntry} color="primary" variant="contained">Agregar registro</Button>
-        </DialogActions>
+        
       </Dialog>
     );
   };
@@ -273,6 +282,8 @@ const FoodDiaryLocal: React.FC = () => {
     const [openDeleteDiaryDialog, setOpenDeleteDiaryDialog] = useState(false)
     const [openEditDiarydialog, setOpenEditDiaryDialog] = useState(false)
     const [entryToEdit, setEntryToEdit] = useState<Entry | null>(null);
+    const [loadingDiaries, setLoadingDiaries] = useState(false)
+    const [creatingDiary, setCreatingDiary] = useState(false)
     const diariesURL = "/food-diary"
 
     useEffect(()=>{
@@ -292,9 +303,9 @@ const FoodDiaryLocal: React.FC = () => {
         .catch(error=>{
             console.log(error)
         })
-        // .finally(()=>{
-        //     setLoadingDiaries(false)
-        // })
+        .finally(()=>{
+            setLoadingDiaries(false)
+        })
     },[])
 
     useEffect(()=>{
@@ -326,6 +337,7 @@ const FoodDiaryLocal: React.FC = () => {
     }
 
     const handleCreateDiary = () => {
+        setCreatingDiary(true)
         const newDiary = {
             title: newDiaryTitle,
             description: newDiaryDescription,
@@ -346,6 +358,7 @@ const FoodDiaryLocal: React.FC = () => {
         })
         .finally(()=>{
             closeCreateDiaryDialog()
+            setCreatingDiary(false)
         })
     }
 
@@ -574,124 +587,131 @@ const FoodDiaryLocal: React.FC = () => {
         </Tabs>
         <TabPanel value={selectedTab} index={0}>
         {/* Diaries Tab */}
-            {diaries.map(diary=> {
-                return (
-                    <>
-                    <Card key={diary.id} sx={{
-                    border: "4px solid", 
-                    borderColor: "primary.dark", 
-                    bgcolor: "primary.contrastText",
-                    width:"90%", 
-                    height: "15vh",
-                    maxHeight: "100px", 
-                    minHeight: "40px",
-                    display:"flex",
-                    }}>
-                        <CardContent sx={{
-                        width:"80%",
-                        height: "100%", 
-                        display:"flex", 
-                        flexDirection: "row", 
-                        justifyContent: "center",
-                        alignItems: "center",
-                        padding:0,
+            {loadingDiaries 
+                ? <CircularProgress/>
+                : diaries.length === 0
+                    ?  <Typography variant="subtitle1">
+                            No hay diarios
+                        </Typography>
+                    :  diaries.map(diary=> {
+                    return (
+                        <>
+                        <Card key={diary.id} sx={{
+                        border: "4px solid", 
+                        borderColor: "primary.dark", 
+                        bgcolor: "primary.contrastText",
+                        width:"90%", 
+                        height: "15vh",
+                        maxHeight: "100px", 
+                        minHeight: "40px",
+                        display:"flex",
                         }}>
-                            <Box sx={{
-                            width:"100%", 
-                            height: "100%",
+                            <CardContent onClick={()=>handleSelectDiary(diary)} sx={{
+                            width:"80%",
+                            height: "100%", 
                             display:"flex", 
-                            flexDirection: "column",
-                            justifyContent: "flex-start",
+                            flexDirection: "row", 
+                            justifyContent: "center",
+                            alignItems: "center",
+                            padding:0,
+                            cursor: "pointer"
                             }}>
-                            <Typography 
-                                variant="h6" 
-                                color="secondary.contrastText" 
-                                width="100%" 
-                                sx={{alignContent:"center", 
-                                    borderBottom: "2px solid", 
-                                    borderColor: "primary.main", 
-                                    bgcolor: "secondary.main"}}
-                                >
-                                {diary.title}
-                            </Typography>
-                            <Typography 
-                            variant='subtitle2' 
-                            color= "primary.dark" 
-                            width="100%"
-                            height="100%"
-                            sx={{
-                                textAlign:"center", 
-                                alignItems: "center", 
-                                justifyContent: "center", 
-                                display: "flex", 
-                                gap:1,
+                                <Box sx={{
+                                width:"100%", 
                                 height: "100%",
-                                bgcolor: "primary.contrastText"
-                            }}>
-                                {diary.description}
-                            </Typography>
+                                display:"flex", 
+                                flexDirection: "column",
+                                justifyContent: "flex-start",
+                                }}>
+                                <Typography 
+                                    variant="h6" 
+                                    color="secondary.contrastText" 
+                                    width="100%" 
+                                    sx={{alignContent:"center", 
+                                        borderBottom: "2px solid", 
+                                        borderColor: "primary.main", 
+                                        bgcolor: "secondary.main"}}
+                                    >
+                                    {diary.title}
+                                </Typography>
+                                <Typography 
+                                variant='subtitle2' 
+                                color= "primary.dark" 
+                                width="100%"
+                                height="100%"
+                                sx={{
+                                    textAlign:"center", 
+                                    alignItems: "center", 
+                                    justifyContent: "center", 
+                                    display: "flex", 
+                                    gap:1,
+                                    height: "100%",
+                                    bgcolor: "primary.contrastText"
+                                }}>
+                                    {diary.description}
+                                </Typography>
+                                <Box sx={{
+                                    width:"100%", 
+                                    display:"flex", 
+                                    flexDirection: "column",
+                                    justifyContent: "center",
+                                    bgcolor: "secondary.main"
+                                }}>     
+                                </Box>
+                                    
+                            </Box>
+                            </CardContent>
+                            <CardActions sx={{padding:0, width:"20%"}}>
                             <Box sx={{
                                 width:"100%", 
                                 display:"flex", 
+                                height: "100%",
                                 flexDirection: "column",
                                 justifyContent: "center",
-                                bgcolor: "secondary.main"
-                            }}>     
-                            </Box>
-                                
-                        </Box>
-                        </CardContent>
-                        <CardActions sx={{padding:0, width:"20%"}}>
-                        <Box sx={{
-                            width:"100%", 
-                            display:"flex", 
-                            height: "100%",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            bgcolor: "primary.dark",
-                            }}>
-                                <IconButton onClick={()=>openDeleteDiary(diary)}>
-                                    <DeleteForeverRoundedIcon
-                                    sx={{
-                                        color:"error.main", 
-                                        fontSize: {
-                                            xs: 18,   // font size for extra small screens (mobile)
-                                            sm: 24,   // font size for large screens (desktops)
-                                        }
-                                    }}/>
-                                </IconButton>
-                                <IconButton onClick={()=>openEditDiary(diary)}>
-                                    <EditIcon 
-                                    sx={{
-                                        color:"primary.contrastText", 
-                                        fontSize: {
-                                            xs: 18,   // font size for extra small screens (mobile)
-                                            sm: 24,   // font size for large screens (desktops)
-                                        }
-                                    }}/>
-                                </IconButton>
-                                <Button onClick={()=>handleSelectDiary(diary)}
-                                variant='text' 
-                                sx={{color: "secondary.main", 
-                                    fontSize: {
-                                        xs: 12,   // font size for extra small screens (mobile)
-                                        sm: 16,   // font size for large screens (desktops)
-                                    }, 
-                                    padding:0
+                                alignItems: "center",
+                                bgcolor: "primary.dark",
                                 }}>
-                                    Ver más
-                                </Button>
-                                
-                            </Box>
-                        </CardActions>
-                    </Card> 
-                    
-                    
-                    
-                    </>
-                )
-            })}
+                                    <IconButton onClick={()=>openDeleteDiary(diary)}>
+                                        <DeleteForeverRoundedIcon
+                                        sx={{
+                                            color:"error.main", 
+                                            fontSize: {
+                                                xs: 18,   // font size for extra small screens (mobile)
+                                                sm: 24,   // font size for large screens (desktops)
+                                            }
+                                        }}/>
+                                    </IconButton>
+                                    <IconButton onClick={()=>openEditDiary(diary)}>
+                                        <EditIcon 
+                                        sx={{
+                                            color:"primary.contrastText", 
+                                            fontSize: {
+                                                xs: 18,   // font size for extra small screens (mobile)
+                                                sm: 24,   // font size for large screens (desktops)
+                                            }
+                                        }}/>
+                                    </IconButton>
+                                    <Button onClick={()=>handleSelectDiary(diary)}
+                                    variant='text' 
+                                    sx={{color: "secondary.main", 
+                                        fontSize: {
+                                            xs: 12,   // font size for extra small screens (mobile)
+                                            sm: 16,   // font size for large screens (desktops)
+                                        }, 
+                                        padding:0
+                                    }}>
+                                        Ver más
+                                    </Button>
+                                    
+                                </Box>
+                            </CardActions>
+                        </Card> 
+                        
+                        
+                        
+                        </>
+                    )
+                })}
             <Button onClick={openCreateDiaryDialog}
                 variant="dark" 
                 sx={{
@@ -739,7 +759,14 @@ const FoodDiaryLocal: React.FC = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={closeCreateDiaryDialog} variant="text">Salir</Button>
-                    <Button onClick={handleCreateDiary} disabled={newDiaryTitle===""} color="primary" variant="contained">Agregar diario</Button>
+                    <Button onClick={handleCreateDiary} disabled={newDiaryTitle===""} color="primary" variant="contained">
+                        {
+                            creatingDiary
+                                ? <CircularProgress size={"small"}/>
+                                : <>Crear diario</>
+                        }
+                        
+                    </Button>
                 </DialogActions>
             </Dialog>
             <Dialog open={openEditDiarydialog} onClose={closeEditDiary}
