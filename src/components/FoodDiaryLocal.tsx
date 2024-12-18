@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Button, Box, TextField, Paper, Typography, Grid, Badge, Dialog, DialogTitle, DialogContent, 
     DialogActions, IconButton, Card, CardContent, CardActions, Tabs, Tab,
-    CircularProgress} from '@mui/material';
+    CircularProgress,
+    Divider} from '@mui/material';
 import api from "../api";
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
@@ -29,8 +30,8 @@ function TabPanel(props:any) {
             {value === index && 
                 <Grid container display="flex" 
                 flexDirection="column" 
+                alignItems={"center"}
                 justifyContent="start"
-                alignItems="center"
                 sx={{width: "95vw", maxWidth:"500px", flexWrap: "wrap", gap:2}}
                 >{children}</Grid>}
         </div>
@@ -128,6 +129,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
             <TextField
               label="Título"
               value={entryTitle}
+              inputProps = {{maxLength: 100}}
               onChange={(e) => {
                 const inputValue = e.target.value;
                 // Remove "-" characters from the input
@@ -140,6 +142,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
             <TextField
               label="Detalles"
               value={entryNotes}
+              inputProps = {{maxLength: 500}}
               onChange={(e) => setEntryNotes(e.target.value)}
               variant="outlined"
               multiline
@@ -220,13 +223,20 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
     };
   
     return (
-      <Dialog open={true} onClose={onClose}>
+      <Dialog open={true} onClose={onClose} PaperProps={{
+        sx: {
+            maxHeight: '80vh', 
+            width: "85vw",
+            maxWidth: "450px"
+        }
+    }}>
         <DialogTitle>Editar registro en {selectedDate.format('DD/MM/YYYY')}</DialogTitle>
         <DialogContent>
           <Grid container direction="column" gap={2}>
             <TextField
               label="Título"
               value={entryTitle}
+              inputProps = {{maxLength: 100}}
               onChange={(e) => {
                 const inputValue = e.target.value;
                 // Remove "-" characters from the input
@@ -240,6 +250,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
               label="Detalles"
               value={entryNotes}
               onChange={(e) => setEntryNotes(e.target.value)}
+              inputProps = {{maxLength: 500}}
               variant="outlined"
               multiline
               rows={3}
@@ -251,12 +262,12 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
                 onChange={(newTime) => setSelectedTime(newTime)}
                 />
             </LocalizationProvider>
+            <Box sx={{display: "flex", justifyContent: "flex-end"}}>
+                <Button onClick={onClose} color="secondary">Salir</Button>
+                <Button onClick={handleEditEntry} color="primary" variant="contained">Guardar</Button>
+            </Box>
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} color="secondary">Salir</Button>
-          <Button onClick={handleEditEntry} color="primary" variant="contained">Modificar registro</Button>
-        </DialogActions>
       </Dialog>
     );
   };
@@ -284,6 +295,8 @@ const FoodDiaryLocal: React.FC = () => {
     const [entryToEdit, setEntryToEdit] = useState<Entry | null>(null);
     const [loadingDiaries, setLoadingDiaries] = useState(false)
     const [creatingDiary, setCreatingDiary] = useState(false)
+    const buttonRef = useRef<HTMLButtonElement | null>(null);
+    const [openEntries, setOpenEntries] = useState(false)
     const diariesURL = "/food-diary"
 
     useEffect(()=>{
@@ -450,7 +463,18 @@ const FoodDiaryLocal: React.FC = () => {
             }
         );
         setFilteredEntries(entriesForDate || []);
+        setOpenEntries(true)
     };
+
+    // useEffect(() => {
+    //     if (filteredEntries.length > 0 && buttonRef.current) {
+    //         // Scroll to the button smoothly
+    //         buttonRef.current.scrollIntoView({
+    //             behavior: "smooth",
+    //             block: "end", // Align the button at the bottom of the screen
+    //         });
+    //     }
+    // }, [filteredEntries]); // Runs when filtered entries are updated
 
     const generatePDF = (entryListTitle: string, entries: any[], userName: string) => {
         const doc = new jsPDF();
@@ -577,7 +601,8 @@ const FoodDiaryLocal: React.FC = () => {
         setSelectedDate(date.startOf('month'));
         // Update highlightedDays based on the new month
         // ...
-      };
+    };
+
 
     return ( 
         <>
@@ -744,12 +769,14 @@ const FoodDiaryLocal: React.FC = () => {
                         label="Título"
                         value={newDiaryTitle}
                         onChange={(e) => setNewDiaryTitle(e.target.value)}
+                        inputProps = {{maxLength: 100}}
                         variant="outlined"
                         sx={{my:1}}
                     />
                     <TextField
                         label="Descripción"
                         multiline
+                        inputProps = {{maxLength: 250}}
                         rows={2}
                         maxRows={2}
                         value={newDiaryDescription}
@@ -759,7 +786,7 @@ const FoodDiaryLocal: React.FC = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={closeCreateDiaryDialog} variant="text">Salir</Button>
-                    <Button onClick={handleCreateDiary} disabled={newDiaryTitle===""} color="primary" variant="contained">
+                    <Button onClick={handleCreateDiary} disabled={newDiaryTitle==="" || newDiaryDescription===""} color="primary" variant="contained">
                         {
                             creatingDiary
                                 ? <CircularProgress size={"small"}/>
@@ -782,6 +809,7 @@ const FoodDiaryLocal: React.FC = () => {
                     <TextField
                         label="Título"
                         value={newDiaryTitle}
+                        inputProps = {{maxLength: 100}}
                         onChange={(e) => setNewDiaryTitle(e.target.value)}
                         variant="outlined"
                         sx={{my:1}}
@@ -791,6 +819,7 @@ const FoodDiaryLocal: React.FC = () => {
                         multiline
                         rows={2}
                         maxRows={2}
+                        inputProps = {{maxLength: 250}}
                         value={newDiaryDescription}
                         onChange={(e) => setNewDiaryDescription(e.target.value)}
                         variant="outlined"
@@ -818,25 +847,43 @@ const FoodDiaryLocal: React.FC = () => {
                     <Button onClick={handleDeleteDiary} color="primary" variant="contained">Borrar</Button>
                 </DialogActions>
             </Dialog>
-            </TabPanel>
+        </TabPanel>
 
-            <TabPanel value={selectedTab} index={1}>
+        <TabPanel value={selectedTab} index={1}>
             {selectedDiary && (
             <>
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-            <Box sx={{display:"flex", flexDirection: "column", alignItems: "center", gap:1, justifyContent: "center", width:"100%"}}>
+            <Box sx={{display:"flex", flexDirection: "column", alignItems: "center", gap:1, justifyContent: "flex-start", width:"90%"}}>
                 <Typography variant="h6">
                     {selectedDiary.title}
                 </Typography>
-                <Button variant="inverted" onClick={handleDownloadPDF} sx={{gap:1}}>
-                    <PictureAsPdfIcon sx={{fontSize:18}}/>
-                    <Typography variant="subtitle1">
-                        Descargar
-                    </Typography>
-                </Button>
+                <Box sx={{display:"flex", flexDirection: "row", alignItems: "center", gap:1, justifyContent: "space-between", width:"100%"}}>
+                    <Button variant="text" onClick={handleDownloadPDF} sx={{gap:1}}>
+                        <PictureAsPdfIcon sx={{fontSize:18}}/>
+                        <Typography variant="subtitle2" sx={{textDecoration: "underline", flex:1}}>
+                            Descargar
+                        </Typography>
+                    </Button>
+                    <Divider orientation="vertical" variant="middle" flexItem/>
+                    <Button variant="text" onClick={openAddEntryDialog} sx={{gap:1, flex:1}}>
+                        <AddIcon sx={{fontSize:18}}/>
+                        <Typography variant="subtitle2" sx={{textDecoration: "underline"}}>
+                            Agregar registro en {selectedDate?.format('DD/MM/YYYY')}
+                        </Typography>
+                    </Button>
+                </Box>
+                
             </Box>
                <DateCalendar
                     value={selectedDate}
+                    sx={{
+                        border: "3px solid", 
+                        width: "90vw", 
+                        maxWidth: "500px", 
+                        borderColor: "primary.main", 
+                        bgcolor: "secondary.light", 
+                        borderRadius: "5%",
+                    }}
                     renderLoading={() => <DayCalendarSkeleton />}
                     onMonthChange={handleMonthChange}
                     onChange={(newValue) => handleDateClick(newValue)}
@@ -849,90 +896,80 @@ const FoodDiaryLocal: React.FC = () => {
                     } as any,
                     }}
                 />
-                <Box sx={{mb:6, gap:1, width: "100%"}}>
-                {filteredEntries.length > 0 ? (
-                    filteredEntries.map((entry: any) => (
-                        <Box key={entry.id} sx={{ border: "5px solid", borderColor: "primary.main", width: "90%", my:1 }}>
-                            <Paper elevation={0} square={true} sx={{ bgcolor: "primary.main", color: "primary.contrastText", justifyContent: "space-between", alignItems: "center", display: "flex", px: 1, pb: "5px" }}>
-                                <Typography variant='h6' color="primary.contrastText">{entry.title}</Typography>
-                                <Box sx={{display: "flex", flexDirection: "row", gap:1}}>
-                                    <IconButton
-                                        onClick={() => openEditEntryDialog(entry)}
-                                        sx={{
-                                            padding:0.2, 
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            justifyContent: "space-between",
-                                            height: "100%"
-                                        }}
-                                    >
-                                        <EditIcon sx={{color: 'primary.contrastText', height: "24px", width: "24px" }}/>
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={() => openDeleteEntryDialog(entry)}
-                                        sx={{
-                                            padding:0.2, 
-                                            color: "warning.main", 
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            justifyContent: "space-between",
-                                            height: "100%"
-                                        }}
-                                    >
-                                        <DeleteForeverRoundedIcon sx={{color: 'error.main', height: "24px", width: "24px" }}/>
-                                    </IconButton>
-                                </Box>
-                                {/* Add Entry Dialog */}
-                                {isEditEntryOpen && selectedDate && entryToEdit && (
-                                    <EditEntryForm setEntries={setEntries} diaryId={selectedDiary?.id} selectedDate={selectedDate} onClose={closeEditEntryDialog} entry = {entryToEdit}/>
-                                )}
-                            </Paper>
-                            {entry.content && 
-                            <Paper elevation={0}>
-                                {entry.content.split("\n").map((note: string, i:number) => (
-                                    <Typography key={i} variant='subtitle1' color="primary.dark" textAlign={"left"} sx={{ my: 1, ml: 1 }}>
-                                        - {note}
-                                    </Typography>
-                                ))}
-                            </Paper>
-                            }
+                <Dialog
+                    open={openEntries}
+                    onClose={()=>{setOpenEntries(false)}}
+                    fullWidth
+                    maxWidth={false}
+                    PaperProps={{
+                        sx: {
+                            maxHeight: '80vh', 
+                            width: "100vw",
+                            maxWidth: "450px",
+                            margin: 0
+                        }
+                    }}
+                >
+                    <DialogTitle sx={{bgcolor: "secondary.light", color: "secondary.contrastText"}}>
+                        Registros de {selectedDate?.format('DD/MM/YYYY')}
+                    </DialogTitle>
+                    <DialogContent dividers>
+                        <Box sx={{ mb: "50px", gap: 1, width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            {filteredEntries.length > 0 ? (
+                                filteredEntries.map((entry: any) => (
+                                    <Box key={entry.id} sx={{ border: "5px solid", borderColor: "primary.main", width: "100%", my: 1 }}>
+                                        <Paper elevation={0} square sx={{ bgcolor: "primary.main", color: "primary.contrastText", display: "flex", justifyContent: "space-between", alignItems: "center", px: 1, pb: "5px" }}>
+                                            <Typography variant="subtitle1" color="primary.contrastText">
+                                                {entry.title}
+                                            </Typography>
+                                            <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
+                                                <IconButton
+                                                    onClick={() => openEditEntryDialog(entry)}
+                                                    sx={{ padding: 0.2, height: "100%" }}
+                                                >
+                                                    <EditIcon sx={{ color: 'primary.contrastText', height: "24px", width: "24px" }} />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={() => openDeleteEntryDialog(entry)}
+                                                    sx={{ padding: 0.2, color: "warning.main", height: "100%" }}
+                                                >
+                                                    <DeleteForeverRoundedIcon sx={{ color: 'error.main', height: "24px", width: "24px" }} />
+                                                </IconButton>
+                                            </Box>
+                                        </Paper>
+                                        {entry.content && (
+                                            <Paper elevation={0}>
+                                                {entry.content.split("\n").map((note: string, i: number) => (
+                                                    <Typography key={i} variant="subtitle1" color="primary.dark" textAlign="left" sx={{ my: 1, ml: 1 }}>
+                                                        - {note}
+                                                    </Typography>
+                                                ))}
+                                            </Paper>
+                                        )}
+                                    </Box>
+                                ))
+                            ) : (
+                                <Typography variant="subtitle2">No hay registros en la fecha seleccionada</Typography>
+                            )}
                         </Box>
-                    ))
-                ) : (
-                    <Typography variant="subtitle2">No hay registros en la fecha seleccionada</Typography>
-                )}
-                <Dialog open={isDeleteEntryOpen} onClose={closeDeleteEntryDialog}>
-                    <DialogTitle>Eliminar registro: {entryToEdit?.title}</DialogTitle>
-                    <DialogContent>
-                        <Typography>
-                            ¿Seguro que desea eliminar el registro {entryToEdit?.title}?
-                        </Typography>
                     </DialogContent>
                     <DialogActions>
-                    <Button onClick={closeDeleteEntryDialog} color="secondary">Cancelar</Button>
-                    <Button onClick={handleDeleteEntry} color="primary" variant="contained">Aceptar</Button>
+                        <Button onClick={openAddEntryDialog} variant="contained"> Agregar registro</Button>
+                        <Button onClick={()=>{setOpenEntries(false)}} variant="text">Salir</Button>
                     </DialogActions>
                 </Dialog>
-                </Box>
-                <Button onClick={openAddEntryDialog}
-                variant="dark" 
-                sx={{
-                    display: "flex",
-                    position: 'fixed',
-                    bottom: 0, // 16px from the bottom
-                    zIndex: 100, // High zIndex to ensure it's on top of everything
-                    height: "48px",
-                    width: "100%",
-                    maxWidth: "500px"
-                }}
-                >
-                    <AddIcon sx={{fontSize: 40}}></AddIcon>
-                    <Typography variant='subtitle1' color={"inherit"}>
-                        Agregar registro en {selectedDate?.format('DD/MM/YYYY')}
-                    </Typography>
-                    
-                </Button>
-
+                    <Dialog open={isDeleteEntryOpen} onClose={closeDeleteEntryDialog}>
+                        <DialogTitle>Eliminar registro: {entryToEdit?.title}</DialogTitle>
+                        <DialogContent>
+                            <Typography>
+                                ¿Seguro que desea eliminar el registro {entryToEdit?.title}?
+                            </Typography>
+                        </DialogContent>
+                        <DialogActions>
+                        <Button onClick={closeDeleteEntryDialog} color="secondary">Cancelar</Button>
+                        <Button onClick={handleDeleteEntry} color="primary" variant="contained">Aceptar</Button>
+                        </DialogActions>
+                    </Dialog>
                 {/* Add Entry Dialog */}
                 {isAddEntryOpen && selectedDate && (
                     <AddEntryForm setEntries={setEntries} diaryId={selectedDiary?.id} selectedDate={selectedDate} onClose={closeAddEntryDialog} />

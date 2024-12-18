@@ -108,6 +108,7 @@ function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
             <TextField
               label="Título"
               value={taskTitle}
+              inputProps = {{maxLength: 100}}
               onChange={(e) => {
                 const inputValue = e.target.value;
                 // Remove "-" characters from the input
@@ -119,6 +120,7 @@ function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
             />
             <TextField
               label="Detalles"
+              inputProps = {{maxLength: 500}}
               value={taskNotes}
               onChange={(e) => setTaskNotes(e.target.value)}
               variant="outlined"
@@ -207,6 +209,7 @@ function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
             <TextField
               label="Título"
               value={taskTitle}
+              inputProps = {{maxLength: 100}}
               onChange={(e) => {
                 const inputValue = e.target.value;
                 // Remove "-" characters from the input
@@ -219,6 +222,7 @@ function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
             <TextField
               label="Detalles"
               value={taskNotes}
+              inputProps = {{maxLength: 500}}
               onChange={(e) => setTaskNotes(e.target.value)}
               variant="outlined"
               multiline
@@ -501,6 +505,7 @@ const FoodDiary: React.FC = () => {
                 <DialogContent>
                     <TextField
                         label="Nombre"
+                        inputProps = {{maxLength: 100}}
                         value={newTaskListTitle}
                         onChange={(e) => setNewTaskListTitle(e.target.value)}
                         variant="outlined"
