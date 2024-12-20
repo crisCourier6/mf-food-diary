@@ -626,14 +626,15 @@ const FoodDiaryLocal: React.FC = () => {
                         borderColor: "primary.dark", 
                         bgcolor: "primary.contrastText",
                         width:"90%", 
-                        height: "15vh",
-                        maxHeight: "100px", 
-                        minHeight: "40px",
+                        height: "20vh",
+                        maxHeight: "120px", 
+                        minHeight: "60px",
                         display:"flex",
+                        flexDirection: "column"
                         }}>
                             <CardContent onClick={()=>handleSelectDiary(diary)} sx={{
-                            width:"80%",
-                            height: "100%", 
+                            width:"100%",
+                            height: "75%", 
                             display:"flex", 
                             flexDirection: "row", 
                             justifyContent: "center",
@@ -686,36 +687,17 @@ const FoodDiaryLocal: React.FC = () => {
                                     
                             </Box>
                             </CardContent>
-                            <CardActions sx={{padding:0, width:"20%"}}>
+                            <CardActions sx={{padding:0, width:"100%", height: "25%"}}>
                             <Box sx={{
                                 width:"100%", 
                                 display:"flex", 
                                 height: "100%",
-                                flexDirection: "column",
-                                justifyContent: "center",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
                                 alignItems: "center",
                                 bgcolor: "primary.dark",
                                 }}>
-                                    <IconButton onClick={()=>openDeleteDiary(diary)}>
-                                        <DeleteForeverRoundedIcon
-                                        sx={{
-                                            color:"error.main", 
-                                            fontSize: {
-                                                xs: 18,   // font size for extra small screens (mobile)
-                                                sm: 24,   // font size for large screens (desktops)
-                                            }
-                                        }}/>
-                                    </IconButton>
-                                    <IconButton onClick={()=>openEditDiary(diary)}>
-                                        <EditIcon 
-                                        sx={{
-                                            color:"primary.contrastText", 
-                                            fontSize: {
-                                                xs: 18,   // font size for extra small screens (mobile)
-                                                sm: 24,   // font size for large screens (desktops)
-                                            }
-                                        }}/>
-                                    </IconButton>
+                                    <Box sx={{display: "flex"}}></Box>
                                     <Button onClick={()=>handleSelectDiary(diary)}
                                     variant='text' 
                                     sx={{color: "secondary.main", 
@@ -725,9 +707,31 @@ const FoodDiaryLocal: React.FC = () => {
                                         }, 
                                         padding:0
                                     }}>
-                                        Registros
+                                        Ver registros
                                     </Button>
+                                    <Box sx={{display: "flex"}}>
+                                        <IconButton onClick={()=>openDeleteDiary(diary)}>
+                                            <DeleteForeverRoundedIcon
+                                            sx={{
+                                                color:"error.main", 
+                                                fontSize: {
+                                                    xs: 18,   // font size for extra small screens (mobile)
+                                                    sm: 24,   // font size for large screens (desktops)
+                                                }
+                                            }}/>
+                                        </IconButton>
+                                        <IconButton onClick={()=>openEditDiary(diary)}>
+                                            <EditIcon 
+                                            sx={{
+                                                color:"primary.contrastText", 
+                                                fontSize: {
+                                                    xs: 18,   // font size for extra small screens (mobile)
+                                                    sm: 24,   // font size for large screens (desktops)
+                                                }
+                                            }}/>
+                                        </IconButton>
                                     
+                                    </Box>
                                 </Box>
                             </CardActions>
                         </Card> 
