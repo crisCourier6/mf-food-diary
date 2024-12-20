@@ -725,7 +725,7 @@ const FoodDiaryLocal: React.FC = () => {
                                         }, 
                                         padding:0
                                     }}>
-                                        Ver más
+                                        Registros
                                     </Button>
                                     
                                 </Box>
