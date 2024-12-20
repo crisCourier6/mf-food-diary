@@ -958,21 +958,25 @@ const FoodDiaryLocal: React.FC = () => {
                         <Button onClick={()=>{setOpenEntries(false)}} variant="text">Salir</Button>
                     </DialogActions>
                 </Dialog>
-                    <Dialog open={isDeleteEntryOpen} onClose={closeDeleteEntryDialog}>
-                        <DialogTitle>Eliminar registro: {entryToEdit?.title}</DialogTitle>
-                        <DialogContent>
-                            <Typography>
-                                ¿Seguro que desea eliminar el registro {entryToEdit?.title}?
-                            </Typography>
-                        </DialogContent>
-                        <DialogActions>
-                        <Button onClick={closeDeleteEntryDialog} color="secondary">Cancelar</Button>
-                        <Button onClick={handleDeleteEntry} color="primary" variant="contained">Aceptar</Button>
-                        </DialogActions>
-                    </Dialog>
+                <Dialog open={isDeleteEntryOpen} onClose={closeDeleteEntryDialog}>
+                    <DialogTitle>Eliminar registro: {entryToEdit?.title}</DialogTitle>
+                    <DialogContent>
+                        <Typography>
+                            ¿Seguro que desea eliminar el registro {entryToEdit?.title}?
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                    <Button onClick={closeDeleteEntryDialog} color="secondary">Cancelar</Button>
+                    <Button onClick={handleDeleteEntry} color="primary" variant="contained">Aceptar</Button>
+                    </DialogActions>
+                </Dialog>
                 {/* Add Entry Dialog */}
                 {isAddEntryOpen && selectedDate && (
                     <AddEntryForm setEntries={setEntries} diaryId={selectedDiary?.id} selectedDate={selectedDate} onClose={closeAddEntryDialog} />
+                )}
+                {/* Edit Entry Dialog */}
+                {isEditEntryOpen && selectedDate && entryToEdit && (
+                    <EditEntryForm setEntries={setEntries} diaryId={selectedDiary?.id} selectedDate={selectedDate} onClose={closeEditEntryDialog} entry = {entryToEdit}/>
                 )}
                 </LocalizationProvider>
             </>
