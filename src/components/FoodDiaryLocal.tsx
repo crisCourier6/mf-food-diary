@@ -697,19 +697,21 @@ const FoodDiaryLocal: React.FC = () => {
                                 alignItems: "center",
                                 bgcolor: "primary.dark",
                                 }}>
-                                    <Box sx={{display: "flex"}}></Box>
-                                    <Button onClick={()=>handleSelectDiary(diary)}
-                                    variant='text' 
-                                    sx={{color: "secondary.main", 
-                                        fontSize: {
-                                            xs: 12,   // font size for extra small screens (mobile)
-                                            sm: 16,   // font size for large screens (desktops)
-                                        }, 
-                                        padding:0
-                                    }}>
-                                        Ver registros
-                                    </Button>
-                                    <Box sx={{display: "flex"}}>
+                                    <Box sx={{display: "flex", flex: 1}}></Box>
+                                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flex:2 }}>
+                                        <Button onClick={()=>handleSelectDiary(diary)}
+                                        variant='text' 
+                                        sx={{color: "secondary.main", 
+                                            fontSize: {
+                                                xs: 12,   // font size for extra small screens (mobile)
+                                                sm: 16,   // font size for large screens (desktops)
+                                            }, 
+                                            padding:0
+                                        }}>
+                                            Ver registros
+                                        </Button>
+                                    </Box>
+                                    <Box sx={{display: "flex", flex: 1}}>
                                         <IconButton onClick={()=>openDeleteDiary(diary)}>
                                             <DeleteForeverRoundedIcon
                                             sx={{
