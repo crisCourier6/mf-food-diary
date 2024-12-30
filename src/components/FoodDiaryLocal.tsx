@@ -119,8 +119,9 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
       <Dialog open={true} onClose={onClose} PaperProps={{
         sx: {
             maxHeight: '80vh', 
-            width: "85vw",
-            maxWidth: "450px"
+            width: "100vw",
+            maxWidth: "450px",
+            margin: "auto"
         }
     }}>
         <DialogTitle>Registro en {selectedDate.format('DD/MM/YYYY')}</DialogTitle>
@@ -157,7 +158,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
             </LocalizationProvider>
             <Box sx={{display: "flex", justifyContent: "flex-end"}}>
                 <Button onClick={onClose} color="secondary">Salir</Button>
-                <Button onClick={handleAddEntry} color="primary" variant="contained">Agregar registro</Button>
+                <Button onClick={handleAddEntry} color="primary" variant="contained">Guardar</Button>
             </Box>
             
           </Grid>
@@ -226,8 +227,9 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
       <Dialog open={true} onClose={onClose} PaperProps={{
         sx: {
             maxHeight: '80vh', 
-            width: "85vw",
-            maxWidth: "450px"
+            width: "100vw",
+            maxWidth: "450px",
+            margin: "auto"
         }
     }}>
         <DialogTitle>Editar registro en {selectedDate.format('DD/MM/YYYY')}</DialogTitle>
@@ -960,7 +962,7 @@ const FoodDiaryLocal: React.FC = () => {
                         </Box>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={openAddEntryDialog} variant="contained"> Agregar registro</Button>
+                        <Button onClick={openAddEntryDialog} variant="contained"> Guardar</Button>
                         <Button onClick={()=>{setOpenEntries(false)}} variant="text">Salir</Button>
                     </DialogActions>
                 </Dialog>
