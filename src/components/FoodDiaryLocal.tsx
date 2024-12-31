@@ -22,6 +22,7 @@ import { Entry } from "../interfaces/Entry";
 import { Diary } from "../interfaces/Diary";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
 
 function TabPanel(props:any) {
     const { children, value, index, ...other } = props;
@@ -124,7 +125,18 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
             margin: "auto"
         }
     }}>
-        <DialogTitle>Registro en {selectedDate.format('DD/MM/YYYY')}</DialogTitle>
+        <DialogTitle>
+            <Box sx={{display:"flex", justifyContent: "space-between"}}>
+            Registro en {selectedDate.format('DD/MM/YYYY')}
+                <IconButton
+                color="inherit"
+                onClick={onClose}
+                sx={{p:0}}
+                >
+                    <CloseIcon />
+                </IconButton>
+            </Box>
+        </DialogTitle>  
         <DialogContent>
           <Grid container direction="column" gap={2}>
             <TextField
@@ -157,7 +169,6 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
                 />
             </LocalizationProvider>
             <Box sx={{display: "flex", justifyContent: "flex-end"}}>
-                <Button onClick={onClose} color="secondary">Salir</Button>
                 <Button onClick={handleAddEntry} color="primary" variant="contained">Guardar</Button>
             </Box>
             
@@ -232,7 +243,18 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
             margin: "auto"
         }
     }}>
-        <DialogTitle>Editar registro en {selectedDate.format('DD/MM/YYYY')}</DialogTitle>
+        <DialogTitle>
+            <Box sx={{display:"flex", justifyContent: "space-between"}}>
+            Editar registro en {selectedDate.format('DD/MM/YYYY')}
+                <IconButton
+                color="inherit"
+                onClick={onClose}
+                sx={{p:0}}
+                >
+                    <CloseIcon />
+                </IconButton>
+            </Box>
+        </DialogTitle>  
         <DialogContent>
           <Grid container direction="column" gap={2}>
             <TextField
@@ -265,7 +287,6 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
                 />
             </LocalizationProvider>
             <Box sx={{display: "flex", justifyContent: "flex-end"}}>
-                <Button onClick={onClose} color="secondary">Salir</Button>
                 <Button onClick={handleEditEntry} color="primary" variant="contained">Guardar</Button>
             </Box>
           </Grid>
@@ -767,15 +788,28 @@ const FoodDiaryLocal: React.FC = () => {
             PaperProps={{
                 sx: {
                     maxHeight: '80vh', 
-                    width: "85vw",
-                    maxWidth: "450px"
+                    width: "100vw",
+                    maxWidth: "450px",
+                    margin: 0
                 }
             }} >
-                <DialogTitle>Nuevo diario alimenticio</DialogTitle>
+                <DialogTitle>
+                 <Box sx={{display:"flex", justifyContent: "space-between"}}>
+                    Nuevo diario alimenticio
+                        <IconButton
+                        color="inherit"
+                        onClick={closeCreateDiaryDialog}
+                        sx={{p:0}}
+                        >
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+                </DialogTitle>
                 <DialogContent>
                     <TextField
                         label="Título"
                         value={newDiaryTitle}
+                        fullWidth
                         onChange={(e) => setNewDiaryTitle(e.target.value)}
                         inputProps = {{maxLength: 100}}
                         variant="outlined"
@@ -784,6 +818,7 @@ const FoodDiaryLocal: React.FC = () => {
                     <TextField
                         label="Descripción"
                         multiline
+                        fullWidth
                         inputProps = {{maxLength: 250}}
                         rows={2}
                         maxRows={2}
@@ -793,7 +828,6 @@ const FoodDiaryLocal: React.FC = () => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={closeCreateDiaryDialog} variant="text">Salir</Button>
                     <Button onClick={handleCreateDiary} disabled={newDiaryTitle==="" || newDiaryDescription===""} color="primary" variant="contained">
                         {
                             creatingDiary
@@ -808,15 +842,28 @@ const FoodDiaryLocal: React.FC = () => {
             PaperProps={{
                 sx: {
                     maxHeight: '80vh', 
-                    width: "85vw",
-                    maxWidth: "450px"
+                    width: "100vw",
+                    maxWidth: "450px",
+                    margin: 0
                 }
             }} >
-                <DialogTitle>Editar diario {diaryToEdit?.title}</DialogTitle>
+                <DialogTitle>
+                <Box sx={{display:"flex", justifyContent: "space-between"}}>
+                    Editar diario {diaryToEdit?.title}
+                        <IconButton
+                        color="inherit"
+                        onClick={closeEditDiary}
+                        sx={{p:0}}
+                        >
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+                </DialogTitle>
                 <DialogContent>
                     <TextField
                         label="Título"
                         value={newDiaryTitle}
+                        fullWidth
                         inputProps = {{maxLength: 100}}
                         onChange={(e) => setNewDiaryTitle(e.target.value)}
                         variant="outlined"
@@ -827,6 +874,7 @@ const FoodDiaryLocal: React.FC = () => {
                         multiline
                         rows={2}
                         maxRows={2}
+                        fullWidth
                         inputProps = {{maxLength: 250}}
                         value={newDiaryDescription}
                         onChange={(e) => setNewDiaryDescription(e.target.value)}
@@ -834,7 +882,6 @@ const FoodDiaryLocal: React.FC = () => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={closeEditDiary} variant="text">Salir</Button>
                     <Button onClick={handleEditDiary} disabled={newDiaryTitle===""} color="primary" variant="contained">Guardar</Button>
                 </DialogActions>
             </Dialog>
@@ -917,10 +964,20 @@ const FoodDiaryLocal: React.FC = () => {
                             margin: 0
                         }
                     }}
-                >
-                    <DialogTitle sx={{bgcolor: "secondary.light", color: "secondary.contrastText"}}>
+                >    
+                    <DialogTitle>
+                        <Box sx={{display:"flex", justifyContent: "space-between"}}>
                         Registros de {selectedDate?.format('DD/MM/YYYY')}
-                    </DialogTitle>
+                            <IconButton
+                            color="inherit"
+                            onClick={()=>{setOpenEntries(false)}}
+                            sx={{p:0}}
+                            >
+
+                                <CloseIcon />
+                            </IconButton>
+                        </Box>
+                    </DialogTitle>       
                     <DialogContent dividers>
                         <Box sx={{ mb: "50px", gap: 1, width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
                             {filteredEntries.length > 0 ? (
@@ -962,8 +1019,7 @@ const FoodDiaryLocal: React.FC = () => {
                         </Box>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={openAddEntryDialog} variant="contained"> Guardar</Button>
-                        <Button onClick={()=>{setOpenEntries(false)}} variant="text">Salir</Button>
+                        <Button onClick={openAddEntryDialog} variant="contained"> Agregar registro</Button>
                     </DialogActions>
                 </Dialog>
                 <Dialog open={isDeleteEntryOpen} onClose={closeDeleteEntryDialog}>
