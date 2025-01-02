@@ -3,7 +3,6 @@ import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Button, Box, TextField, Paper, Typography, Grid, CircularProgress, 
     Badge, Dialog, DialogTitle, DialogContent, DialogActions, IconButton} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import api from "../api";
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
@@ -24,7 +23,6 @@ interface Task {
 }
 
 function getHighlightedDays(tasks: any[], currentMonth: Dayjs | null) {
-    // console.log(currentMonth?.month())
     if (currentMonth){
         return tasks
         .filter(task => dayjs(task.due).month() === currentMonth.month())
@@ -249,7 +247,6 @@ const FoodDiary: React.FC = () => {
     const [taskLists, setTaskLists] = useState<any>([])
     const [googleUser, setGoogleUser] = useState(true)
     const [selectedTaskList, setSelectedTaskList] = useState<string>("");
-    // const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
     const [tasks, setTasks] = useState<any>(null)
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
     const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);

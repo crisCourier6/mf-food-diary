@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Button, Box, TextField, Paper, Typography, Grid, Badge, Dialog, DialogTitle, DialogContent, 
@@ -17,7 +17,6 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import 'dayjs/locale/es';
 import { TimePicker } from "@mui/x-date-pickers";
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
-import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import { Entry } from "../interfaces/Entry";
 import { Diary } from "../interfaces/Diary";
 import AddIcon from '@mui/icons-material/Add';
@@ -75,8 +74,7 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
     const [entryTitle, setEntryTitle] = useState('');
     const [entryNotes, setEntryNotes] = useState('');
     const [selectedTime, setSelectedTime] = useState<Dayjs|null>(dayjs());
-    const token = window.sessionStorage.getItem("token") || window.localStorage.getItem("token")
-    const currentUserId = window.sessionStorage.getItem("id") || window.localStorage.getItem("id")
+    const token = window.sessionStorage.getItem("token") ?? window.localStorage.getItem("token")
     const entriesURL = `/food-diary/byid/${diaryId}/entries`
   
     const handleAddEntry = () => {
@@ -296,20 +294,18 @@ function getHighlightedDays(entries: Entry[], currentMonth: Dayjs | null) {
   };
 
 const FoodDiaryLocal: React.FC = () => {
-    const token = window.sessionStorage.getItem("token") || window.localStorage.getItem("token")
-    const currentUserId = window.sessionStorage.getItem("id") || window.localStorage.getItem("id")
+    const token = window.sessionStorage.getItem("token") ?? window.localStorage.getItem("token")
+    const currentUserId = window.sessionStorage.getItem("id") ?? window.localStorage.getItem("id")
     const [selectedTab, setSelectedTab] = useState(0); // 0 for Diaries, 1 for Entries
     const [diaries, setDiaries] = useState<Diary[]>([])
     const [selectedDiary, setSelectedDiary] = useState<Diary|null>(null);
     const [diaryToEdit, setDiaryToEdit] = useState<Diary | null>(null)
-    // const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
     const [entries, setEntries] = useState<Entry[]>([])
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
     const [isAddEntryOpen, setIsAddEntryOpen] = useState(false);
     const [isEditEntryOpen, setIsEditEntryOpen] = useState(false)
     const [isDeleteEntryOpen, setIsDeleteEntryOpen] = useState(false)
     const [filteredEntries, setFilteredEntries] = useState<Entry[]>([]);
-    // const [loadingDiaries, setLoadingDiaries] = useState(true);
     const [newDiaryTitle, setNewDiaryTitle] = useState<string>('')
     const [newDiaryDescription, setNewDiaryDescription] = useState<string>('')
     const [openNewDiarydialog, setOpenNewDiaryDialog] = useState(false)
@@ -318,7 +314,6 @@ const FoodDiaryLocal: React.FC = () => {
     const [entryToEdit, setEntryToEdit] = useState<Entry | null>(null);
     const [loadingDiaries, setLoadingDiaries] = useState(false)
     const [creatingDiary, setCreatingDiary] = useState(false)
-    const buttonRef = useRef<HTMLButtonElement | null>(null);
     const [openEntries, setOpenEntries] = useState(false)
     const diariesURL = "/food-diary"
 
@@ -554,7 +549,7 @@ const FoodDiaryLocal: React.FC = () => {
       // Call this function when needed
       const handleDownloadPDF = () => {
         if (selectedDiary){
-            const userName = sessionStorage.getItem('name') || localStorage.getItem('name');
+            const userName = sessionStorage.getItem('name') ?? localStorage.getItem('name');
             generatePDF(selectedDiary?.title, entries, userName || 'Desconocido');
         }
         
@@ -643,7 +638,6 @@ const FoodDiaryLocal: React.FC = () => {
                         </Typography>
                     :  diaries.map(diary=> {
                     return (
-                        <>
                         <Card key={diary.id} sx={{
                         border: "4px solid", 
                         borderColor: "primary.dark", 
@@ -760,10 +754,6 @@ const FoodDiaryLocal: React.FC = () => {
                                 </Box>
                             </CardActions>
                         </Card> 
-                        
-                        
-                        
-                        </>
                     )
                 })}
             <Button onClick={openCreateDiaryDialog}
@@ -906,7 +896,7 @@ const FoodDiaryLocal: React.FC = () => {
 
         <TabPanel value={selectedTab} index={1}>
             {selectedDiary && (
-            <>
+
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
             <Box sx={{display:"flex", flexDirection: "column", alignItems: "center", gap:1, justifyContent: "flex-start", width:"90%"}}>
                 <Typography variant="h6">
@@ -1043,7 +1033,6 @@ const FoodDiaryLocal: React.FC = () => {
                     <EditEntryForm setEntries={setEntries} diaryId={selectedDiary?.id} selectedDate={selectedDate} onClose={closeEditEntryDialog} entry = {entryToEdit}/>
                 )}
                 </LocalizationProvider>
-            </>
             
         )}
         </TabPanel>

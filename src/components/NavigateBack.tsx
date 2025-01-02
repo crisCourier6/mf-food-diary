@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IconButton, Box, Button } from '@mui/material';
+import { IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const NavigateBack:React.FC<{size?: "small" | "medium" | "large"}> = ({size = "medium"}) => {
